@@ -5,6 +5,7 @@ Third-party service credentials (e.g., Google Maps API keys).'''
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
+    ORS_KEY:str="5b3ce3597851110001cf62489c207b5888084af7af1a24632660f16d"
     DATABASE_URL: str = "postgresql://postgres:123456789@localhost:5432/postgres"
     DEBUG_MODE: bool = True  # Enable debugging mode
 
