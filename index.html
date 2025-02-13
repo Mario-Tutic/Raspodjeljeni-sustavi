@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FCM Web Client</title>
+  <!-- Add Firebase SDK (compat versions) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+</head>
+<body>
+  <h1>FCM Web Client</h1>
+  <p>This is a simple web client to receive FCM notifications.</p>
+  <button id="request-permission">Enable Notifications</button>
+  <p><strong>FCM Token:</strong> <span id="fcm-token"></span></p>
+  <p><strong>Notification:</strong> <span id="notification"></span></p>
+
+  <script>
+    // Firebase configuration (replace with your own)
+    const firebaseConfig = {
+        apiKey: "AIzaSyAR6eZI97sTwAe502QHlRPdn7nwDuEWg8g",
+        authDomain: "uber-copy-254c5.firebaseapp.com",
+        projectId: "uber-copy-254c5",
+        storageBucket: "uber-copy-254c5.firebasestorage.app",
+        messagingSenderId: "275654718107",
+        appId: "1:275654718107:web:1c440d11e94acefd7ecc3e",
+        measurementId: "G-PD2K8PE1XT"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    // Register the service worker
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+        .register("/firebase-messaging-sw.js", { scope: "/" })
+        .then((registration) => {
+            console.log("Service Worker registered with scope:", registration.scope);
+        })
+        .catch((err) => {
+            console.log("Service Worker registration failed:", err);
+        });
+    }
+
+    // Request permission for notifications
+    document.getElementById("request-permission").addEventListener("click", () => {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+          getFCMToken();
+        } else {
+          console.log("Unable to get permission to notify.");
+        }
+      });
+    });
+
+    // Get FCM token
+    function getFCMToken() {
+      messaging.getToken({ vapidKey: "BB-ypxgXHzrHD6bUt8REKP72tDaz9Ob2SFbuJNoKxdrDXucANPqsyGsSMQc_YSQ8QjKc0WhV40AnRm6pFz28UZg" }).then((currentToken) => {
+        if (currentToken) {
+          console.log("FCM Token:", currentToken);
+          document.getElementById("fcm-token").innerText = currentToken;
+        } else {
+          console.log("No registration token available. Request permission to generate one.");
+        }
+      }).catch((err) => {
+        console.log("An error occurred while retrieving token. ", err);
+      });
+    }
+
+    // Handle incoming messages (foreground)
+    messaging.onMessage((payload) => {
+      console.log("Message received. ", payload);
+      const notification = payload.notification;
+      document.getElementById("notification").innerText = JSON.stringify(notification);
+
+      // Display a notification
+      if (Notification.permission === "granted") {
+        new Notification(notification.title, {
+          body: notification.body,
+          icon: notification.icon,
+        });
+      }
+    });
+  </script>
+</body>
+</html>
