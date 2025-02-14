@@ -22,6 +22,7 @@ class RideOffer(SQLModel,table=True):
     end_location: str = Field(sa_column=Column(Geometry("POINT", srid=4326)))
     price:float
     confirmed:bool = False
+    timestamp:datetime = Field(default_factory=datetime.now)
 
     ##MISSING TIMESTAMP BECAUSE OF 30 SECONDS RULE AND PRICE
 

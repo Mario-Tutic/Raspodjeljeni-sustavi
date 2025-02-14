@@ -11,7 +11,6 @@ from py_models.models import MatchStatus
 from db.models import RideOffer, Driver
 
 # Initialize ORS client with your API key
-#Creating client once at startup see how should you handle it like this(singletone) or like DI 
 
 def get_OSR_client():
     client = openrouteservice.Client(key=settings.ORS_KEY)
@@ -27,11 +26,6 @@ def find_ride(user_lat: float, user_lon: float,destination_lat: float, destinati
         return ride_info
     return {"message": "No drivers available"}
 
-'''
-@router.post("/confirm-ride")
-def confirm_ride(status:MatchStatus):
-    return status
-'''
 
 #WRONG BUT USE FOR REFERENCE LATER
 '''
