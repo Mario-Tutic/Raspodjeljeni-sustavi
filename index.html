@@ -14,6 +14,7 @@
   <button id="request-permission">Enable Notifications</button>
   <p><strong>FCM Token:</strong> <span id="fcm-token"></span></p>
   <p><strong>Notification:</strong> <span id="notification"></span></p>
+  <p><strong>Data:</strong> <span id="data"></span></p>
 
   <script>
     // Firebase configuration (replace with your own)
@@ -74,6 +75,8 @@
       console.log("Message received. ", payload);
       const notification = payload.notification;
       document.getElementById("notification").innerText = JSON.stringify(notification);
+      const data = payload.data;
+      document.getElementById("data").innerText = JSON.stringify(data);
 
       // Display a notification
       if (Notification.permission === "granted") {

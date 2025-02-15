@@ -63,12 +63,23 @@ from firebase_admin import credentials, messaging
 cred = credentials.Certificate("core/uber-copy-254c5-firebase-adminsdk-fbsvc-9f8147c87f.json")
 firebase_admin.initialize_app(cred)
  
-@router.post("/send-notification/")
-async def send_notification(token: str, title: str, body: str):
-    """Send a notification to a device using FCM token"""
+@router.post("/confirm-ride/")
+async def send_notification(token: str , id: uuid.UUID,session:Session = Depends(get_session)):
+    #Mark ride as confirmed
+    ride = session.get(RideOffer, id)
+    if not ride:
+        raise HTTPException(status_code=404, detail="Ride not found")
+    ride.confirmed = True
+    session.add(ride)
+    session.commit()
+
+    #Send a notification to a device using FCM token
+
+  
     message = messaging.Message(
-        notification=messaging.Notification(title=title, body=body),
-        token=token
+        notification=messaging.Notification(title="New Ride Confirmed!", body="You got a new ride"),
+        token=token,
+        data={"ride_id": str(id)}
     )
 
     try:
