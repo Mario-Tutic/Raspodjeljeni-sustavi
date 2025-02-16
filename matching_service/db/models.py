@@ -10,6 +10,7 @@ class Driver(SQLModel, table=True):
     name: str
     last_location: str = Field(sa_column=Column(Geometry("POINT", srid=4326)))
     fcm_token: str = Field(default=None, nullable=True)  # Store FCM token (optional field)
+    surname:str
 
 
 
@@ -23,6 +24,7 @@ class RideOffer(SQLModel,table=True):
     price:float
     confirmed:bool = False
     timestamp:datetime = Field(default_factory=datetime.now)
+    driver_id: uuid.UUID = Field(default=None,foreign_key="driver.id")
 
     ##MISSING TIMESTAMP BECAUSE OF 30 SECONDS RULE AND PRICE
 

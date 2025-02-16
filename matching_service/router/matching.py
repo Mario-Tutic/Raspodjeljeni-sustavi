@@ -27,32 +27,6 @@ def find_ride(user_lat: float, user_lon: float,destination_lat: float, destinati
     return {"message": "No drivers available"}
 
 
-#WRONG BUT USE FOR REFERENCE LATER
-'''
-@router.post("/confirm-ride/")
-async def confirm_ride(ride_id: uuid.UUID, session: Session = Depends(get_session)):
-    ride = await session.get(RideOffer, ride_id)
-    if not ride:
-        raise HTTPException(status_code=404, detail="Ride not found")
-
-    # Mark ride as confirmed
-    ride.status = True
-    await session.commit()
-
-    # Get driver details
-    driver = await session.get(Driver, ride.driver_id)
-    if driver and driver.fcm_token:
-        # Send FCM Notification
-        send_fcm_notification(
-            fcm_token=driver.fcm_token,
-            title="New Ride Confirmed!",
-            body=f"A user has confirmed a ride. Pickup at {ride.pickup_location}.",
-            data_payload={"ride_id": ride_id, "status": "confirmed"}
-        )
-
-    return {"message": "Ride confirmed, driver notified!"}
-'''
-
 
 
 #SEND NOTIFICATION TO DRIVER TEST
@@ -64,7 +38,7 @@ cred = credentials.Certificate("core/uber-copy-254c5-firebase-adminsdk-fbsvc-9f8
 firebase_admin.initialize_app(cred)
  
 @router.post("/confirm-ride/")
-async def send_notification(token: str , id: uuid.UUID,session:Session = Depends(get_session)):
+async def send_notification(id: uuid.UUID,session:Session = Depends(get_session)):
     #Mark ride as confirmed
     ride = session.get(RideOffer, id)
     if not ride:
@@ -75,7 +49,10 @@ async def send_notification(token: str , id: uuid.UUID,session:Session = Depends
 
     #Send a notification to a device using FCM token
 
-  
+    driver=session.get(Driver,ride.driver_id)
+    if not driver:
+        raise HTTPException(status_code=404, detail="Driver connected to your ride does't exist")
+    token=driver.fcm_token   
     message = messaging.Message(
         notification=messaging.Notification(title="New Ride Confirmed!", body="You got a new ride"),
         token=token,
@@ -84,6 +61,6 @@ async def send_notification(token: str , id: uuid.UUID,session:Session = Depends
 
     try:
         response = messaging.send(message)
-        return {"success": True, "response": response}
+        return {"detail":"Driver is on your way","driver":f"{driver.name} {driver.surname}"}
     except Exception as e:
         return {"success": False, "error": str(e)}

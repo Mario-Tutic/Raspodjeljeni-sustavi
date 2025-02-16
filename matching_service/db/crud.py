@@ -48,9 +48,7 @@ def find_ride_info(session: Session,
 
     #CALCULATING SNAPPED START AND END LOCATION(IF LOCATIONS ARE A BIT FURTHER FROM ROADS)
 
-
-    #INSIDE RIDE OFFER IM NOT SENDING DRIVER INFO BECAUSE IT SHOULD BE SENT AFER USER CONFIRMS A RIDE    
-    ride_offer = RideOffer(time=duration_min, distance=distance_km, start_location=user_location, end_location=destination_location,price=2*distance_km)
+    ride_offer = RideOffer(time=duration_min, distance=distance_km, start_location=user_location, end_location=destination_location,price=2*distance_km, driver_id=closest_driver.id)
 
     try:   
         session.add(ride_offer)
@@ -58,13 +56,9 @@ def find_ride_info(session: Session,
     except SQLAlchemyError as e:
         print(f"Error while committing to the database: {e}")
 
-    print(f"\n\nIMPORTANT:{type(ride_offer.end_location)}")
     ride_offer.start_location=str(ride_offer.start_location)
     ride_offer.end_location=str(ride_offer.end_location)
-    try:
-        print(f"\n\nIMPORTANT:{type(ride_offer.end_location)}")
-    except Exception as e:
-        print(e)
+
     #driver.last_location = session.scalar(func.ST_AsText(driver.last_location))
     #driver.last_location=str(driver.last_location)
     
