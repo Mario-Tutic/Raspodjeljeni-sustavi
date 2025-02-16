@@ -6,7 +6,10 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     ORS_KEY:str="5b3ce3597851110001cf62489c207b5888084af7af1a24632660f16d"
-    DATABASE_URL: str = "postgresql://postgres:123456789@localhost:5432/postgres"
+    DATABASE_URL: str = "postgresql://postgres:123456789@postgres_db:5432/mydb"
+    #DATABASE_URL: str = "postgresql://postgres:123456789@localhost:5433/mydb"
+    #DATABASE_URL: str = "postgresql://myuser:mypassword@localhost:5432/mydb"
+
     DEBUG_MODE: bool = True  # Enable debugging mode
 
     class Config:
